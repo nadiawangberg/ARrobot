@@ -126,7 +126,6 @@ class AugmentedImageActivity : AppCompatActivity() {
                         textVieww!!.text = distdec.toString()
 
 
-
                         if (mediaPlayer == null) {
                             mediaPlayer = MediaPlayer.create(this, R.raw.pip)
                             mediaPlayer!!.setVolume(0.1F, 0.1F)
@@ -135,23 +134,12 @@ class AugmentedImageActivity : AppCompatActivity() {
                         //Text color
                         if (distanceMeters < 0.3) {
                             textVieww.setTextColor(Color.RED) //0xAARRGGBB
-                            /*
-                            if (mediaPlayer == null) {
-                                mediaPlayer = MediaPlayer.create(this, R.raw.beep)
-                            }
-                            */
                             mediaPlayer?.start()
                         }
                         else {
                             textVieww.setTextColor(Color.WHITE)
-                            //mediaPlayer?.pause()
                         }
 
-
-                        //Music
-
-
-                        //release()
                     }
 
 
