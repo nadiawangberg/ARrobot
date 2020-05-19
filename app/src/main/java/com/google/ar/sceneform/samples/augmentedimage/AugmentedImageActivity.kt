@@ -33,6 +33,8 @@ import java.math.BigDecimal
 import java.math.RoundingMode
 import java.util.*
 
+var objID = -1
+
 /**
  * This application demonstrates using augmented images to place anchor nodes. app to include image
  * tracking functionality.
@@ -78,22 +80,18 @@ class AugmentedImageActivity : AppCompatActivity() {
      */
     private fun onUpdateFrame(frameTime: FrameTime) {
         val frame = arFragment!!.arSceneView.arFrame ?: return
-
         var textVieww = findViewById<TextView>(R.id.textView)
-        /*
-        val textView = findViewById<TextView>(R.id.textView).apply {
-            text = (String) count
-        }
-        */
+        //var objID = -1
 
         // If there is no frame, just return.
         val updatedAugmentedImages = frame.getUpdatedTrackables(AugmentedImage::class.java)
         for (augmentedImage in updatedAugmentedImages) {
             when (augmentedImage.trackingState) {
                 TrackingState.PAUSED -> {
-                    // When an image is in PAUSED state, but the camera is not PAUSED, it has been detected,
-                    // but not yet tracked.
-                    val text = "Detected Image " + augmentedImage.index
+                    // When an image is in PAUSED state (image is detected), but the camera is not PAUSED, it has been detected,
+                    // but not yet tracked. (but cant be placed in 3d yet)
+                    objID = augmentedImage.index
+                    val text = "Detected object " + objID
                     SnackbarHelper.getInstance().showMessage(this, text)
                 }
                 TrackingState.TRACKING -> {
@@ -106,13 +104,15 @@ class AugmentedImageActivity : AppCompatActivity() {
                         node.image = augmentedImage
                         augmentedImageMap[augmentedImage] = node
                         arFragment!!.arSceneView.scene.addChild(node)
-                        currentAnchorNode  = node
+                        currentAnchorNode = node
                         currentAnchor = node.anchor
                     }
 
+                    // Find the closest object / the object in view
+                        // set that object to current anchor
 
                     if (currentAnchorNode != null) {
-                        //Get pose
+                        //Get pose of the LATEST anchor to placed in space (should be the visible / closest one)
                         val cameraPose = frame!!.camera.pose
                         val objectPose = currentAnchor!!.pose
 
@@ -123,7 +123,7 @@ class AugmentedImageActivity : AppCompatActivity() {
                         val distanceMeters = Math.sqrt(dx * dx + dy * dy + (dz * dz).toDouble())
                         val distdec = BigDecimal(distanceMeters).setScale(2, RoundingMode.HALF_EVEN)
                         //tvDistance!!.text = "Distance from camera: $decimal metres"
-                        textVieww!!.text = distdec.toString()
+                        textVieww!!.text = "Distance to object $objID: $distdec"
 
 
                         if (mediaPlayer == null) {
@@ -133,13 +133,14 @@ class AugmentedImageActivity : AppCompatActivity() {
 
                         //Text color
                         if (distanceMeters < 0.3) {
-                            textVieww.setTextColor(Color.RED) //0xAARRGGBB
+                            textVieww!!.text = "Reached object $objID: $distdec"
+                            textVieww.setTextColor(Color.GREEN) //0xAARRGGBB
                             mediaPlayer?.start()
                         }
                         else {
+                            textVieww!!.text = "Distance to object $objID: $distdec"
                             textVieww.setTextColor(Color.WHITE)
                         }
-
                     }
 
 

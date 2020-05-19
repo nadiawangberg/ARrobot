@@ -29,7 +29,7 @@
     <ImageView
         android:id="@+id/image_view_fit_to_scan"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="823dp"
         android:layout_gravity="center"
         android:contentDescription="@string/fit_image_to_scan"
         android:scaleType="fitCenter"
@@ -37,10 +37,20 @@
 
     <TextView
         android:id="@+id/textView"
-        android:layout_width="match_parent"
-        android:layout_height="58dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:fontFamily="@font/aclonica"
-        android:text="TextView"
-        android:textSize="30sp" />
+        android:text="No object found"
+        android:textSize="19sp" />
+
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="match_parent"
+        android:layout_height="75dp"
+        android:text="                                  !"
+        android:textAlignment="viewEnd"
+        android:textColor="#FFC107"
+        android:textSize="36sp"
+        android:textStyle="bold" />
 
 </FrameLayout>
