@@ -81,15 +81,14 @@ class AugmentedImageActivity : AppCompatActivity() {
     private fun onUpdateFrame(frameTime: FrameTime) {
         val frame = arFragment!!.arSceneView.arFrame ?: return
         var textVieww = findViewById<TextView>(R.id.textView)
+        var textView2 = findViewById<TextView>(R.id.textView5)
         //var objID = -1
 
         // If there is no frame, just return.
         val updatedAugmentedImages = frame.getUpdatedTrackables(AugmentedImage::class.java)
         for (augmentedImage in updatedAugmentedImages) {
             when (augmentedImage.trackingState) {
-                TrackingState.PAUSED -> {
-                    // When an image is in PAUSED state (image is detected), but the camera is not PAUSED, it has been detected,
-                    // but not yet tracked. (but cant be placed in 3d yet)
+                TrackingState.PAUSED -> { // Detects image but not enough to place in 3d (not yet tracked)
                     objID = augmentedImage.index
                     val text = "Detected object " + objID
                     SnackbarHelper.getInstance().showMessage(this, text)
@@ -116,13 +115,19 @@ class AugmentedImageActivity : AppCompatActivity() {
                         val cameraPose = frame!!.camera.pose
                         val objectPose = currentAnchor!!.pose
 
-                        val dx = objectPose.tx() - cameraPose.tx()
-                        val dy = objectPose.ty() - cameraPose.ty()
-                        val dz = objectPose.tz() - cameraPose.tz()
+                        val camtx = cameraPose.tx()
+                        val camty = cameraPose.ty()
+                        val camtz = (cameraPose.tz()).toDouble()
+                        val dx = objectPose.tx() - camtx
+                        val dy = objectPose.ty() - camty
+                        val dz = objectPose.tz() - camtz
+                        val d0 = Math.sqrt(camtx*camtx + camty*camty + camtz*camtz)
+                        val d0dec = BigDecimal(d0).setScale(2, RoundingMode.HALF_EVEN)
 
-                        val distanceMeters = Math.sqrt(dx * dx + dy * dy + (dz * dz).toDouble())
+                        val distanceMeters = Math.sqrt(dx * dx + dy * dy + dz * dz)
                         val distdec = BigDecimal(distanceMeters).setScale(2, RoundingMode.HALF_EVEN)
-                        //tvDistance!!.text = "Distance from camera: $decimal metres"
+
+                        textView2!!.text = "                                        $d0dec"
                         textVieww!!.text = "Distance to object $objID: $distdec"
 
 
@@ -142,8 +147,6 @@ class AugmentedImageActivity : AppCompatActivity() {
                             textVieww.setTextColor(Color.WHITE)
                         }
                     }
-
-
                 }
                 TrackingState.STOPPED -> augmentedImageMap.remove(augmentedImage)
             }
