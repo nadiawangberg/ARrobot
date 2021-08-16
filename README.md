@@ -1,1 +1,1 @@
-ARrobot
+This experiment project looks into using google ARcore and Sceneform as a tool for autonomous robots. This spesific project reccognices known objects in the scene and finds the distance between the camera and the object. This could be used for localizing objects of interest or avoiding spesific objects. 
